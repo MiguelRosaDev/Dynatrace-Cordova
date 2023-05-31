@@ -2,14 +2,12 @@ module.exports = function (context) {
     var deferral;
     var fs;
     var path;
-    
     function isCordovaAbove (context, version) {
         var cordovaVersion = context.opts.cordova.version;
         console.log(cordovaVersion);
         var sp = cordovaVersion.split('.');
         return parseInt(sp[0]) >= version;
-    }
-    
+      }
     if(isCordovaAbove(context,8)){
         deferral = require("q").defer();
         fs  = require("fs");
@@ -20,33 +18,9 @@ module.exports = function (context) {
         path  = context.requireCordovaModule("path");
     }
 
-    function getAppId(context) {
-      var cordovaAbove8 = isCordovaAbove(context, 8);
-      var et;
-      if (cordovaAbove8) {
-        et = require('elementtree');
-      } else {
-        et = context.requireCordovaModule('elementtree');
-      }
-
-      var config_xml = path.join(context.opts.projectRoot, 'config.xml');
-      var data = fs.readFileSync(config_xml).toString();
-      var etree = et.parse(data);
-      return etree.getroot().attrib.id;
-    }
-
-    function isCordovaAbove(context, version) {
-      var cordovaVersion = context.opts.cordova.version;
-      console.log(cordovaVersion);
-      var sp = cordovaVersion.split('.');
-      return parseInt(sp[0]) >= version;
-    }
-    
-    var appId = getAppId(context);    
     var wwwPath = path.join(context.opts.projectRoot,"www");
-    var configPath = path.join(wwwPath, "dynatraceConfig/" + appId);
+    var configPath = path.join(wwwPath, "dynatraceConfig");
     files = fs.readdirSync(configPath);
-    
     if(files.length >0){
         copyFolderRecursiveSync(configPath, path.join(context.opts.projectRoot));
         deferral.resolve();
